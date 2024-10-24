@@ -2,8 +2,11 @@ import Atividade1.*;
 import Atividade2.*;
 import Atividade3.*;
 import Atividade4.*;
+import Atividades5e6.*;
 
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class Main {
     public static void main(String[] args) {
@@ -31,6 +34,18 @@ public class Main {
                 case 4:
                     Atividade4();
                     break;
+
+                case 5:
+                    Atividade5();
+                    break;
+
+                case 6:
+                    Atividade6();
+                    break;
+
+                default:
+                    System.out.println("Escolha uma opção válida");
+                    break;
             }
         } while(escolha != 0);
     }
@@ -52,8 +67,8 @@ public class Main {
 
     public static void Atividade2(){
         //Threads
-        Thread pares = new Thread(new NumerosPares(54));
-        Thread impares = new Thread(new NumerosImpares(54));
+        Thread pares = new Thread(new NumerosPares(20));
+        Thread impares = new Thread(new NumerosImpares(20));
 
         //Inicia todas as threads
         pares.start();
@@ -73,8 +88,8 @@ public class Main {
         Controle controle = new Controle();
 
         //Threads
-        Thread threadPares = new Thread(new NumerosParesWait(54, controle));
-        Thread threadImpares = new Thread(new NumerosImparesWait(54, controle));
+        Thread threadPares = new Thread(new NumerosParesWait(20, controle));
+        Thread threadImpares = new Thread(new NumerosImparesWait(20, controle));
 
         //Inicia todas as threads
         threadPares.start();
@@ -119,6 +134,48 @@ public class Main {
             System.out.println("Valor total no contador: " + contador.getValor());
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public static void Atividade5(){
+        //Fila de capacidade 10
+        BlockingQueue<Integer> fila = new ArrayBlockingQueue<>(10);
+
+        //Threads
+        Thread threadProdutor = new Thread(new Produtor(fila));
+        Thread threadConsumidor = new Thread(new Consumidor(fila));
+
+        //Iniciando as threads
+        threadProdutor.start();
+        threadConsumidor.start();
+
+        try{
+            //Esperando as threads terminarem
+            threadProdutor.join();
+            threadConsumidor.join();
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void Atividade6(){
+        //Fila de capacidade 10
+        BlockingQueue<Integer> fila = new ArrayBlockingQueue<>(10);
+
+        //Quantidade de threads
+        int quantProdutores = 3;
+        int quantConsumidores = 2;
+
+        //Threads de Produtor sendo criadas e iniciadas
+        for(int i=0; i < quantProdutores; i++){
+            Thread threadProdutor = new Thread(new Produtor(fila));
+            threadProdutor.start();
+        }
+
+        //Threads de Consumidor sendo criadas e iniciadas
+        for(int i=0; i < quantConsumidores; i++){
+            Thread threadConsumidor = new Thread(new Consumidor(fila));
+            threadConsumidor.start();
         }
     }
 
